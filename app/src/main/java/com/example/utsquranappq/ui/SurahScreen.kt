@@ -79,7 +79,7 @@ fun SurahCard(surah: Surah, navController: NavController) {
                 modifier = Modifier.size(44.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.surahicon),
+                    painter = painterResource(id = R.drawable.iconsurat),
                     contentDescription = "Surah Number",
                     modifier = Modifier.fillMaxSize()
                 )

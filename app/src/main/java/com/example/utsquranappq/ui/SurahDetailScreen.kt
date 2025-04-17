@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import com.example.utsquranappq.R
 import com.example.utsquranappq.model.AyahEdition
 import com.example.utsquranappq.viewmodel.SurahDetailViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,6 +65,7 @@ fun SurahDetailScreen(
     val coroutineScope = rememberCoroutineScope()
     var searchAyah by remember { mutableStateOf("") }
     var searchError by remember { mutableStateOf<String?>(null) }
+    var searchTargetAyah by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo }
@@ -104,7 +106,7 @@ fun SurahDetailScreen(
                 }
             }.filterNotNull()
         } else {
-            surahDetail // Tidak ada filter untuk Surah 1 dan Surah 9
+            surahDetail
         }
     }
 
@@ -112,6 +114,39 @@ fun SurahDetailScreen(
     LaunchedEffect(filteredSurahDetail) {
         filteredSurahDetail.filter { it.numberInSurah == 1 }.forEach {
             Log.d("FilteredSurahDetailAyah1", "numberInSurah: ${it.numberInSurah}, edition: ${it.edition.identifier}, text: ${it.text}")
+        }
+    }
+
+    // Scroll ke ayat yang dicari setelah data tersedia
+    LaunchedEffect(filteredSurahDetail, searchTargetAyah, isLoadingMore) {
+        searchTargetAyah?.let { ayahNumber ->
+            // Jika sedang memuat, tunggu hingga selesai
+            while (isLoadingMore) {
+                Log.d("SearchAyah", "Waiting for loading to complete for ayah $ayahNumber")
+                delay(100) // Delay kecil untuk mencegah busy loop
+            }
+
+            val groupedAyahs = filteredSurahDetail.groupBy { it.numberInSurah }
+            val targetIndex = groupedAyahs.keys.sorted().indexOf(ayahNumber)
+            if (targetIndex >= 0) {
+                // Tambahkan offset +1 jika header Bismillah ada
+                val hasBismillahHeader = surahNumber != 1 && surahNumber != 9 && surahDetail.any { it.edition.identifier == "quran-uthmani" && normalizeText(it.text).contains(normalizedBismillah) }
+                val finalIndex = if (hasBismillahHeader) targetIndex + 1 else targetIndex
+                Log.d("SearchAyah", "Scrolling to ayah $ayahNumber at index $finalIndex (hasBismillahHeader: $hasBismillahHeader)")
+                coroutineScope.launch {
+                    listState.animateScrollToItem(finalIndex)
+                }
+                searchTargetAyah = null // Reset setelah scrolling
+            } else if (viewModel.hasMoreAyahs() && !isLoadingMore) {
+                // Jika ayat belum ada dan masih ada halaman, muat lagi
+                Log.d("SearchAyah", "Ayah $ayahNumber not found, fetching more ayahs")
+                viewModel.fetchSurahDetail(surahNumber, targetAyah = ayahNumber)
+            } else {
+                // Jika tidak ada lagi halaman atau ayat tidak valid
+                Log.d("SearchAyah", "Ayah $ayahNumber not found and no more ayahs to load")
+                searchError = "Ayat $ayahNumber tidak ditemukan atau tidak valid"
+                searchTargetAyah = null // Reset jika gagal
+            }
         }
     }
 
@@ -170,7 +205,11 @@ fun SurahDetailScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.weight(1f),
                 isError = searchError != null,
-                
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF2C3E50),
+                    unfocusedBorderColor = Color(0xFF2C3E50),
+                    cursorColor = Color(0xFF2C3E50)
+                )
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(
@@ -178,16 +217,11 @@ fun SurahDetailScreen(
                     val ayahNumber = searchAyah.toIntOrNull()
                     if (ayahNumber == null || ayahNumber <= 0) {
                         searchError = "Masukkan nomor ayat yang valid"
-                    } else if (ayahNumber > viewModel.getTotalAyahs() && viewModel.getTotalAyahs() > 0) {
+                    } else if (viewModel.getTotalAyahs() > 0 && ayahNumber > viewModel.getTotalAyahs()) {
                         searchError = "Ayat $ayahNumber tidak ada di Surah ini"
                     } else {
-                        viewModel.fetchSurahDetail(surahNumber, targetAyah = ayahNumber)
-                        coroutineScope.launch {
-                            val targetIndex = filteredSurahDetail.indexOfFirst { it.numberInSurah == ayahNumber }
-                            if (targetIndex >= 0) {
-                                listState.animateScrollToItem(targetIndex)
-                            }
-                        }
+                        Log.d("SearchAyah", "Searching for ayah $ayahNumber")
+                        searchTargetAyah = ayahNumber // Trigger pencarian dan pemuatan
                     }
                 },
                 colors = ButtonDefaults.buttonColors(

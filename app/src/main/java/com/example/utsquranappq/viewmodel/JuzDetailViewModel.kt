@@ -30,7 +30,7 @@ class JuzViewModel : ViewModel() {
     val error: StateFlow<String?> = _error
 
     // Edisi yang diambil, termasuk audio
-    private val editions = "quran-uthmani,en.transliteration,id.indonesian,ar.alafasy"
+    private val editions = "quran-uthmani,en.transliteration,id.indonesian"
 
     // Variabel untuk pemuatan bertahap
     private var currentPage = 0
