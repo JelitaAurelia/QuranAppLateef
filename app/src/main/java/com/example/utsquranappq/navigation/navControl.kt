@@ -15,7 +15,6 @@ import com.example.utsquranappq.ui.DoaScreen
 import com.example.utsquranappq.ui.HomeScreen
 import com.example.utsquranappq.ui.JadwalSolatScreen
 import com.example.utsquranappq.ui.JuzDetailScreen
-import com.example.utsquranappq.ui.SearchScreen
 import com.example.utsquranappq.ui.SurahDetailScreen
 import com.example.utsquranappq.ui.SurahTab
 
@@ -47,7 +46,7 @@ class HomeScreenActivity : ComponentActivity() {
                         Log.d("Navigation", "Navigasi ke JuzDetailScreen dengan nomor: $juzNumber")
                         JuzDetailScreen(juzNumber, navController)
                     }
-                    composable("search") { SearchScreen(navController) }
+
                 }
             }
         }

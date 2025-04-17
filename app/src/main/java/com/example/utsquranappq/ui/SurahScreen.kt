@@ -28,7 +28,7 @@ import com.example.utsquranappq.utiils.getTranslation
 
 @Composable
 fun SurahTab(
-    navController: NavController, // Sekarang wajib ada
+    navController: NavController,
     viewModel: SurahViewModel = viewModel()
 ) {
     val surahList by viewModel.surahList.collectAsState()
@@ -36,7 +36,7 @@ fun SurahTab(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF4F6457)) // Dark mode
+            .background(Color(0xFF4F6457))
             .padding(horizontal = 16.dp)
     ) {
         LazyColumn(
@@ -45,7 +45,7 @@ fun SurahTab(
             verticalArrangement = Arrangement.spacedBy(7.dp)
         ) {
             items(surahList) { surah ->
-                SurahCard(surah, navController) // Memanggil SurahCard untuk setiap item
+                SurahCard(surah, navController)
             }
         }
     }
@@ -79,15 +79,15 @@ fun SurahCard(surah: Surah, navController: NavController) {
                 modifier = Modifier.size(44.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.nomorsurah), // Ganti dengan ikon nomor surah
+                    painter = painterResource(id = R.drawable.nomorsurah),
                     contentDescription = "Surah Number",
                     modifier = Modifier.fillMaxSize()
                 )
                 Text(
                     text = surah.number.toString(),
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = 11.sp, // Ukuran teks
-                        color = Color.White, // Warna teks putih
+                        fontSize = 11.sp,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold
                     ),
                     textAlign = TextAlign.Center
@@ -124,7 +124,7 @@ fun SurahCard(surah: Surah, navController: NavController) {
             Text(
                 text = surah.name, // Arabic name
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color(0xFF00796B), // Purple accent
+                    color = Color(0xFF00796B),
                     fontWeight = FontWeight.Bold
                 ),
                 textAlign = TextAlign.End

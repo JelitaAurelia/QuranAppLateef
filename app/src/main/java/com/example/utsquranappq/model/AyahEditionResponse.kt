@@ -3,7 +3,7 @@ package com.example.utsquranappq.model
 data class AyahEditionResponse(
     val code: Int,
     val status: String,
-    val data: List<AyahEdition> // Tetap List<AyahEdition> sesuai keinginan
+    val data: List<AyahEdition>
 )
 
 data class AyahEdition(
@@ -17,7 +17,7 @@ data class AyahEdition(
     val ruku: Int,
     val hizbQuarter: Int,
     val edition: Edition,
-    val audioUrl: String? = null
+    val audio: String? = null
 )
 
 data class SurahInfo(

@@ -29,7 +29,7 @@ class SurahDetailViewModel : ViewModel() {
     private val pageSize = 10
     private var totalAyahs = 0
     private var surahNumberCache = 0
-    private val loadedPages = mutableSetOf<Int>() // Lacak halaman yang sudah dimuat
+    private val loadedPages = mutableSetOf<Int>()
 
     fun fetchSurahDetail(surahNumber: Int, reset: Boolean = false, targetAyah: Int? = null) {
         if (surahNumber != surahNumberCache || reset) {
@@ -49,10 +49,10 @@ class SurahDetailViewModel : ViewModel() {
                 }
                 _error.value = null
 
-                val editions = "quran-uthmani,en.transliteration,id.indonesian"
+                // Tambahkan ar.alafasy ke editions
+                val editions = "quran-uthmani,en.transliteration,id.indonesian,ar.alafasy"
                 val ayahList = mutableListOf<AyahEdition>()
 
-                // Ambil total ayah jika belum diketahui
                 if (totalAyahs == 0 || reset) {
                     val surahResponse = repository.getSurah(surahNumber)
                     if (surahResponse.code != 200) {
@@ -62,16 +62,13 @@ class SurahDetailViewModel : ViewModel() {
                     totalAyahs = surahResponse.data.ayahs.size
                 }
 
-                // Tentukan halaman yang akan dimuat
                 val pageToLoad = if (targetAyah != null) {
-                    // Hitung halaman berdasarkan nomor ayat
                     maxOf(0, ceil(targetAyah.toDouble() / pageSize).toInt() - 1)
                 } else {
                     currentPage
                 }
 
                 if (loadedPages.contains(pageToLoad)) {
-                    // Halaman sudah dimuat, skip fetch
                     _isLoadingMore.value = false
                     return@launch
                 }
@@ -80,7 +77,7 @@ class SurahDetailViewModel : ViewModel() {
                 val endAyah = minOf(startAyah + pageSize - 1, totalAyahs)
 
                 if (startAyah > totalAyahs) {
-                    return@launch // Tidak ada lagi ayah untuk dimuat
+                    return@launch
                 }
 
                 val surahResponse = repository.getSurah(surahNumber)
@@ -96,7 +93,6 @@ class SurahDetailViewModel : ViewModel() {
                         }
                     }
 
-                    // Urutkan ayah berdasarkan numberInSurah untuk konsistensi
                     val currentList = _surahDetail.value.toMutableList()
                     currentList.addAll(ayahList)
                     _surahDetail.value = currentList.sortedBy { it.numberInSurah }
