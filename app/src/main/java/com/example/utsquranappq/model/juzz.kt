@@ -1,7 +1,5 @@
 package com.example.utsquranappq.model
 
-
-
 data class JuzResponse(
     val code: Int,
     val status: String,

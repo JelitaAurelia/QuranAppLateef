@@ -75,11 +75,11 @@ fun SurahCard(surah: Surah, navController: NavController) {
         ) {
             // Box untuk menaruh teks di tengah gambar nomor surah
             Box(
-                contentAlignment = Alignment.Center, // Teks di tengah gambar
+                contentAlignment = Alignment.Center,
                 modifier = Modifier.size(44.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.nomorsurah),
+                    painter = painterResource(id = R.drawable.surahicon),
                     contentDescription = "Surah Number",
                     modifier = Modifier.fillMaxSize()
                 )

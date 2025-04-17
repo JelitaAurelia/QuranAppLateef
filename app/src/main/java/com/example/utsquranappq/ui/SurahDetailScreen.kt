@@ -80,6 +80,41 @@ fun SurahDetailScreen(
         viewModel.fetchSurahDetail(surahNumber, reset = true)
     }
 
+    // Normalisasi teks untuk menangani variasi tanda baca
+    fun normalizeText(text: String): String {
+        return text.replace(Regex("[\\u0610-\\u061A\\u064B-\\u065F\\u06D6-\\u06DC\\u06DF-\\u06E8\\u06EA-\\u06ED]"), "").trim()
+    }
+
+    // Filter Bismillah kecuali untuk Surah 1 (Al-Fatihah)
+    val bismillahText = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"
+    val normalizedBismillah = normalizeText(bismillahText)
+    val filteredSurahDetail = remember(surahDetail, surahNumber) {
+        if (surahNumber != 1 && surahNumber != 9) {
+            surahDetail.map { ayah ->
+                if (ayah.edition.identifier == "quran-uthmani" && normalizeText(ayah.text).contains(normalizedBismillah)) {
+                    // Hapus Bismillah dan simpan teks ayat
+                    val cleanedText = ayah.text.replace(bismillahText, "").trim()
+                    if (cleanedText.isNotBlank()) {
+                        ayah.copy(text = cleanedText)
+                    } else {
+                        null
+                    }
+                } else {
+                    ayah
+                }
+            }.filterNotNull()
+        } else {
+            surahDetail // Tidak ada filter untuk Surah 1 dan Surah 9
+        }
+    }
+
+    // Log hanya untuk ayat 1 untuk debugging
+    LaunchedEffect(filteredSurahDetail) {
+        filteredSurahDetail.filter { it.numberInSurah == 1 }.forEach {
+            Log.d("FilteredSurahDetailAyah1", "numberInSurah: ${it.numberInSurah}, edition: ${it.edition.identifier}, text: ${it.text}")
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -135,11 +170,7 @@ fun SurahDetailScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.weight(1f),
                 isError = searchError != null,
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color(0xFF1E1E1E),
-                    focusedBorderColor = Color(0xFF1E1E1E),
-                    cursorColor = Color(0xFF1E1E1E)
-                )
+                
             )
             Spacer(modifier = Modifier.width(8.dp))
             Button(
@@ -152,7 +183,7 @@ fun SurahDetailScreen(
                     } else {
                         viewModel.fetchSurahDetail(surahNumber, targetAyah = ayahNumber)
                         coroutineScope.launch {
-                            val targetIndex = surahDetail.indexOfFirst { it.numberInSurah == ayahNumber }
+                            val targetIndex = filteredSurahDetail.indexOfFirst { it.numberInSurah == ayahNumber }
                             if (targetIndex >= 0) {
                                 listState.animateScrollToItem(targetIndex)
                             }
@@ -206,7 +237,7 @@ fun SurahDetailScreen(
                 }
             }
 
-            surahDetail.isEmpty() && !isLoadingMore -> {
+            filteredSurahDetail.isEmpty() && !isLoadingMore -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -216,58 +247,29 @@ fun SurahDetailScreen(
             }
 
             else -> {
-                val showBismillah = surahNumber != 9 && surahDetail.any { it.numberInSurah == 1 }
-
                 LazyColumn(state = listState) {
-                    // Tampilkan Bismillah di awal jika diperlukan
-                    if (showBismillah) {
-                        val bismillah = surahDetail.first { it.numberInSurah == 1 && it.edition.identifier == "quran-uthmani" }
+                    // Tambahkan Bismillah sebagai header hanya untuk Surah selain Al-Fatihah dan At-Taubah
+                    if (surahNumber != 1 && surahNumber != 9 && surahDetail.any { it.edition.identifier == "quran-uthmani" && normalizeText(it.text).contains(normalizedBismillah) }) {
                         item {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                elevation = CardDefaults.cardElevation(4.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = bismillah.text,
-                                        textAlign = TextAlign.Center,
-                                        fontSize = 33.sp,
-                                        lineHeight = 44.sp,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontFamily = FontFamily(Font(R.font.hafs))
-                                    )
-                                }
-                            }
+                            BismillahHeader()
                         }
                     }
 
-                    // Tampilkan ayat-ayat
-                    items(surahDetail
-                        .groupBy { it.numberInSurah }
-                        .filterKeys {
-                            // Skip ayat 1 jika sudah ditampilkan sebagai Bismillah
-                            !(showBismillah && it == 1)
-                        }
-                        .keys
-                        .sorted()
+                    items(
+                        filteredSurahDetail
+                            .groupBy { it.numberInSurah }
+                            .filterKeys { it >= 1 } // Pastikan hanya ayat yang valid
+                            .keys
+                            .sorted()
                     ) { numberInSurah ->
-                        val ayahs = surahDetail
-                            .filter { it.numberInSurah == numberInSurah }
-
-                        AyahCard(
-                            ayahs = ayahs,
-                            player = player,
-                            numberInSurah = numberInSurah,
-                            // Sesuaikan penomoran jika Bismillah ditampilkan
-                            showNumber = if (showBismillah) numberInSurah - 1 else numberInSurah
-                        )
+                        val ayahs = filteredSurahDetail.filter { it.numberInSurah == numberInSurah }
+                        if (ayahs.isNotEmpty()) {
+                            AyahCard(
+                                ayahs = ayahs,
+                                player = player,
+                                numberInSurah = numberInSurah
+                            )
+                        }
                     }
 
                     if (isLoadingMore) {
@@ -289,11 +291,45 @@ fun SurahDetailScreen(
 }
 
 @Composable
+fun BismillahHeader() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontSize = 33.sp,
+                lineHeight = 44.sp,
+                style = MaterialTheme.typography.bodyLarge,
+                fontFamily = FontFamily(Font(R.font.hafs))
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Dengan nama Allah Yang Maha Pengasih, Maha Penyayang",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
 fun AyahCard(
     ayahs: List<AyahEdition>,
     player: ExoPlayer,
-    numberInSurah: Int,
-    showNumber: Int
+    numberInSurah: Int
 ) {
     var isPlaying by remember { mutableStateOf(false) }
     val audioUrl = ayahs.find { it.edition.identifier == "ar.alafasy" }?.audio
@@ -333,7 +369,7 @@ fun AyahCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Ayat $showNumber",
+                    text = "Ayat $numberInSurah",
                     style = MaterialTheme.typography.titleMedium
                 )
 

@@ -52,7 +52,6 @@ class SplashScreenActivity : ComponentActivity() {
 fun SplashScreen() {
     var scale by remember { mutableStateOf(0f) }
 
-    // Animasi skala untuk logo
     LaunchedEffect(Unit) {
         scale = 1f
     }
@@ -87,7 +86,7 @@ fun SplashScreen() {
             Spacer(modifier = Modifier.height(2.dp))
 
             Text(
-                text = "My Quran App",
+                text = "Qur'an Al Lateef",
                 color = Color.White,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
@@ -100,12 +99,14 @@ fun SplashScreen() {
             Text(
                 text = "أَهْلًا وَسَهْلًا",
                 color = Color.White,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 22.sp, fontWeight = FontWeight.Bold
+                )
             )
         }
 
         Image(
-            painter = painterResource(id = R.drawable.ui),
+            painter = painterResource(id = R.drawable.splash2),
             contentDescription = "Masjid",
             modifier = Modifier
                 .fillMaxWidth()
