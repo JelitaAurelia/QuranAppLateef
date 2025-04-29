@@ -14,7 +14,6 @@ import com.example.utsquranappq.ui.BookmarkScreen
 import com.example.utsquranappq.ui.BottomNavigationBar
 import com.example.utsquranappq.ui.DoaScreen
 import com.example.utsquranappq.ui.HomeScreen
-import com.example.utsquranappq.ui.JadwalSolatScreen
 import com.example.utsquranappq.ui.JuzDetailScreen
 import com.example.utsquranappq.ui.SurahDetailScreen
 import com.example.utsquranappq.ui.SurahTab
