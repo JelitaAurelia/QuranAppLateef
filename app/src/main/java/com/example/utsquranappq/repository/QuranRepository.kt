@@ -7,8 +7,8 @@ import com.example.utsquranappq.model.SurahDetailResponse
 import com.example.utsquranappq.model.SurahResponse
 import com.example.utsquranappq.network.RetrofitInstance
 
-class QuranRepository {
-    private val api = RetrofitInstance.api
+class QuranRepository { //perantara API dan ViewModel, menangani logika pengambilan data
+    private val api = RetrofitInstance.api //memanggil fungsi dari ApiService
 
     //daftar surah
     suspend fun getSurahList(): SurahResponse {
@@ -35,6 +35,7 @@ class QuranRepository {
         }
     }
 
+    //mengambil ayat dalam juz
     suspend fun getJuz(juzNumber: Int, editions: String): JuzResponse {
         try {
             val response = api.getJuz(juzNumber,editions)
@@ -49,6 +50,7 @@ class QuranRepository {
         }
     }
 
+    //mengambil URL audio ayat
     suspend fun getAyahAudio(reference: String): String? {
         try {
             val response = api.getAyahAudio(reference)

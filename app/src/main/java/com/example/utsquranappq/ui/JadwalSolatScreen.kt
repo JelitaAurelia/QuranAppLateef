@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun JadwalSolatScreen() {
+fun JadwalSolatScreen() { //menampilkan jadwal solat statis
     val prayerTimes = listOf(
         PrayerTime("Subuh", "04:30"),
         PrayerTime("Dzuhur", "12:00"),

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.utsquranappq.ui.BookmarkScreen
 import com.example.utsquranappq.ui.BottomNavigationBar
 import com.example.utsquranappq.ui.DoaScreen
 import com.example.utsquranappq.ui.HomeScreen
@@ -33,11 +34,12 @@ class HomeScreenActivity : ComponentActivity() {
                     modifier = Modifier.padding(paddingValues)
                 ) {
                     composable("home") { HomeScreen(navController) }
-                    composable("jadwalSolat") { JadwalSolatScreen() }
-                    composable("doa") { DoaScreen() }
+                    composable("bookmark") { BookmarkScreen(navController) } // Sekarang menampilkan Doa
+                    composable("doa") { DoaScreen() } // Sekarang menampilkan Jadwal Solat
                     composable("surahTab") { SurahTab(navController) }
                     composable("surahDetail/{surahNumber}") { backStackEntry ->
                         val surahNumber = backStackEntry.arguments?.getString("surahNumber")?.toIntOrNull()
+                        val ayahNumber = backStackEntry.arguments?.getString("ayahNumber")?.toIntOrNull()
                         Log.d("Navigation", "Navigasi ke SurahDetailScreen dengan nomor: $surahNumber")
                         SurahDetailScreen(surahNumber, navController)
                     }
@@ -46,7 +48,6 @@ class HomeScreenActivity : ComponentActivity() {
                         Log.d("Navigation", "Navigasi ke JuzDetailScreen dengan nomor: $juzNumber")
                         JuzDetailScreen(juzNumber, navController)
                     }
-
                 }
             }
         }

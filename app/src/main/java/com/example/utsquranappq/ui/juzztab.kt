@@ -41,7 +41,7 @@ fun JuzCard(juz: JuzItem, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
+            .clickable { //ke juz detail screen
                 Log.d("JuzScreen", "Navigating to juzDetail/${juz.number}")
                 navController.navigate("juzDetail/${juz.number}")
             },

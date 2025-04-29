@@ -86,7 +86,7 @@ fun SplashScreen() {
             Spacer(modifier = Modifier.height(2.dp))
 
             Text(
-                text = "Qur'an Al Lateef",
+                text = "Qur'an Al Latheef",
                 color = Color.White,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,

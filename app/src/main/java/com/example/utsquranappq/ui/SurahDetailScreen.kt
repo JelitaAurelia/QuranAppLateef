@@ -106,46 +106,30 @@ fun SurahDetailScreen(
                 }
             }.filterNotNull()
         } else {
-            surahDetail
+            surahDetail // Tidak ada filter untuk Surah 1 dan Surah 9
         }
     }
 
-    // Log hanya untuk ayat 1 untuk debugging
-    LaunchedEffect(filteredSurahDetail) {
-        filteredSurahDetail.filter { it.numberInSurah == 1 }.forEach {
-            Log.d("FilteredSurahDetailAyah1", "numberInSurah: ${it.numberInSurah}, edition: ${it.edition.identifier}, text: ${it.text}")
-        }
-    }
 
-    // Scroll ke ayat yang dicari setelah data tersedia
+    // Scroll ke ayat yang dicari
     LaunchedEffect(filteredSurahDetail, searchTargetAyah, isLoadingMore) {
         searchTargetAyah?.let { ayahNumber ->
-            // Jika sedang memuat, tunggu hingga selesai
             while (isLoadingMore) {
-                Log.d("SearchAyah", "Waiting for loading to complete for ayah $ayahNumber")
-                delay(100) // Delay kecil untuk mencegah busy loop
+                delay(100)
             }
-
             val groupedAyahs = filteredSurahDetail.groupBy { it.numberInSurah }
             val targetIndex = groupedAyahs.keys.sorted().indexOf(ayahNumber)
             if (targetIndex >= 0) {
-                // Tambahkan offset +1 jika header Bismillah ada
-                val hasBismillahHeader = surahNumber != 1 && surahNumber != 9 && surahDetail.any { it.edition.identifier == "quran-uthmani" && normalizeText(it.text).contains(normalizedBismillah) }
-                val finalIndex = if (hasBismillahHeader) targetIndex + 1 else targetIndex
-                Log.d("SearchAyah", "Scrolling to ayah $ayahNumber at index $finalIndex (hasBismillahHeader: $hasBismillahHeader)")
+                val finalIndex = if (surahNumber != 1 && surahNumber != 9) targetIndex + 1 else targetIndex
                 coroutineScope.launch {
                     listState.animateScrollToItem(finalIndex)
                 }
-                searchTargetAyah = null // Reset setelah scrolling
+                searchTargetAyah = null
             } else if (viewModel.hasMoreAyahs() && !isLoadingMore) {
-                // Jika ayat belum ada dan masih ada halaman, muat lagi
-                Log.d("SearchAyah", "Ayah $ayahNumber not found, fetching more ayahs")
                 viewModel.fetchSurahDetail(surahNumber, targetAyah = ayahNumber)
             } else {
-                // Jika tidak ada lagi halaman atau ayat tidak valid
-                Log.d("SearchAyah", "Ayah $ayahNumber not found and no more ayahs to load")
-                searchError = "Ayat $ayahNumber tidak ditemukan atau tidak valid"
-                searchTargetAyah = null // Reset jika gagal
+                searchError = "Ayat $ayahNumber tidak ditemukan"
+                searchTargetAyah = null
             }
         }
     }
@@ -163,15 +147,11 @@ fun SurahDetailScreen(
     ) {
         TopAppBar(
             title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Detail Surah",
-                        textAlign = TextAlign.Center,
-                        color = Color.White
-                    )
-                }
+                Text(
+                    text = "Detail Surah",
+                    textAlign = TextAlign.Center,
+                    color = Color.White
+                )
             },
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
@@ -220,8 +200,7 @@ fun SurahDetailScreen(
                     } else if (viewModel.getTotalAyahs() > 0 && ayahNumber > viewModel.getTotalAyahs()) {
                         searchError = "Ayat $ayahNumber tidak ada di Surah ini"
                     } else {
-                        Log.d("SearchAyah", "Searching for ayah $ayahNumber")
-                        searchTargetAyah = ayahNumber // Trigger pencarian dan pemuatan
+                        searchTargetAyah = ayahNumber
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -282,8 +261,7 @@ fun SurahDetailScreen(
 
             else -> {
                 LazyColumn(state = listState) {
-                    // Tambahkan Bismillah sebagai header hanya untuk Surah selain Al-Fatihah dan At-Taubah
-                    if (surahNumber != 1 && surahNumber != 9 && surahDetail.any { it.edition.identifier == "quran-uthmani" && normalizeText(it.text).contains(normalizedBismillah) }) {
+                    if (surahNumber != 1 && surahNumber != 9) {
                         item {
                             BismillahHeader()
                         }
@@ -292,7 +270,7 @@ fun SurahDetailScreen(
                     items(
                         filteredSurahDetail
                             .groupBy { it.numberInSurah }
-                            .filterKeys { it >= 1 } // Pastikan hanya ayat yang valid
+                            .filterKeys { it >= 1 }
                             .keys
                             .sorted()
                     ) { numberInSurah ->
@@ -301,7 +279,8 @@ fun SurahDetailScreen(
                             AyahCard(
                                 ayahs = ayahs,
                                 player = player,
-                                numberInSurah = numberInSurah
+                                numberInSurah = numberInSurah,
+                                surahNumber = surahNumber
                             )
                         }
                     }
@@ -363,8 +342,10 @@ fun BismillahHeader() {
 fun AyahCard(
     ayahs: List<AyahEdition>,
     player: ExoPlayer,
-    numberInSurah: Int
+    numberInSurah: Int,
+    surahNumber: Int
 ) {
+    var isBookmarked by remember { mutableStateOf(BookmarkManager.getBookmarks().contains(Bookmark(surahNumber, numberInSurah))) }
     var isPlaying by remember { mutableStateOf(false) }
     val audioUrl = ayahs.find { it.edition.identifier == "ar.alafasy" }?.audio
 
@@ -420,6 +401,33 @@ fun AyahCard(
                     Image(
                         painter = painterResource(id = iconRes),
                         contentDescription = if (isPlaying) "Stop" else "Play",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        try {
+                            val bookmark = Bookmark(surahNumber, numberInSurah)
+                            if (isBookmarked) {
+                                BookmarkManager.removeBookmark(bookmark)
+                            } else {
+                                BookmarkManager.addBookmark(bookmark)
+                            }
+                            isBookmarked = !isBookmarked
+                        } catch (e: Exception) {
+                            Log.e("AyahCard", "Error handling bookmark: ${e.message}")
+                        }
+                    },
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(Color.Transparent, shape = CircleShape)
+                ) {
+                    val iconRes = if (isBookmarked) R.drawable.filled else R.drawable.empty
+                    Image(
+                        painter = painterResource(id = iconRes),
+                        contentDescription = if (isBookmarked) "Hapus Bookmark" else "Tambah Bookmark",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.size(24.dp)
                     )

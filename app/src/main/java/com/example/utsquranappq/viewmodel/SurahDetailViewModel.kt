@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
 
-class SurahDetailViewModel : ViewModel() {
+class SurahDetailViewModel : ViewModel() { //mengelola data dan logika untuk layar surah detail
     private val repository = QuranRepository()
 
     private val _surahDetail = MutableStateFlow<List<AyahEdition>>(emptyList())
@@ -26,11 +26,12 @@ class SurahDetailViewModel : ViewModel() {
     val error: StateFlow<String?> = _error
 
     private var currentPage = 0
-    private val pageSize = 10
+    private val pageSize = 10 //pagination
     private var totalAyahs = 0
     private var surahNumberCache = 0
     private val loadedPages = mutableSetOf<Int>()
 
+    //mengambil ayat ayat untuk surah tertentu
     fun fetchSurahDetail(surahNumber: Int, reset: Boolean = false, targetAyah: Int? = null) {
         if (surahNumber != surahNumberCache || reset) {
             currentPage = 0
@@ -50,7 +51,7 @@ class SurahDetailViewModel : ViewModel() {
                 _error.value = null
 
                 // Tambahkan ar.alafasy ke editions
-                val editions = "quran-uthmani,en.transliteration,id.indonesian,ar.alafasy"
+                val editions = "quran-uthmani,en.transliteration,id.indonesian,ar.alafasy" //berisi daftar edisi yang akan diminta dari API Al-Qur'an. Edisi ini ditentukan oleh ID unik
                 val ayahList = mutableListOf<AyahEdition>()
 
                 if (totalAyahs == 0 || reset) {
@@ -112,7 +113,7 @@ class SurahDetailViewModel : ViewModel() {
         }
     }
 
-    fun hasMoreAyahs(): Boolean {
+    fun hasMoreAyahs(): Boolean { //buat atur
         return (currentPage * pageSize) < totalAyahs
     }
 

@@ -1,6 +1,5 @@
 package com.example.utsquranappq.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +25,7 @@ import com.example.utsquranappq.viewmodel.JuzViewModel
 fun JuzDetailScreen(
     juzNumber: Int?,
     navController: NavController,
-    viewModel: JuzViewModel = viewModel()
+    viewModel: JuzViewModel = viewModel() //mengambil data
 ) {
     if (juzNumber == null || juzNumber !in 1..30) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -58,7 +57,7 @@ fun JuzDetailScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            TopAppBar( //tombol kembali pakai icon
                 title = { Text("Juz $juzNumber") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {

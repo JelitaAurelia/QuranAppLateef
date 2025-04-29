@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class JuzViewModel : ViewModel() {
+class JuzViewModel : ViewModel() { //mengelola data dan logika untuk layar juz detail
     private val repository = QuranRepository()
 
     // State untuk daftar ayat

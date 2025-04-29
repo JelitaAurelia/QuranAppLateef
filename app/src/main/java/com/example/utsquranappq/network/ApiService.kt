@@ -5,12 +5,12 @@ import com.example.utsquranappq.model.JuzResponse
 import com.example.utsquranappq.model.SurahDetailResponse
 import com.example.utsquranappq.model.SurahResponse
 import retrofit2.Response
-import retrofit2.http.GET
+import retrofit2.http.GET //antarmuka utk komunikasi dengan api alqur'an cloud pakai retrofit
 import retrofit2.http.Path
 
-interface ApiService {
+interface ApiService { //mendefinisikan endpoint pakai @GET
     @GET("surah")
-    suspend fun getSurahList(): SurahResponse
+    suspend fun getSurahList(): SurahResponse  //fungsi suspend dipanggil pakai viewmodelscope
 
     @GET("surah/{surahNumber}")
     suspend fun getSurah(

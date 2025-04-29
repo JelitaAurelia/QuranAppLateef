@@ -1,6 +1,6 @@
 package com.example.utsquranappq.model
 
-data class SurahResponse(
+data class SurahResponse( //semua daftar surah
     val code: Int,
     val status: String,
     val data: List<Surah>
