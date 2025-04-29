@@ -49,7 +49,7 @@ class SplashScreenActivity : ComponentActivity() {
 }
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen() { //tampilan spalsh
     var scale by remember { mutableStateOf(0f) }
 
     LaunchedEffect(Unit) {
