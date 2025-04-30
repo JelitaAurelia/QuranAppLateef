@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "utsquranappq"
+rootProject.name = "jelita"
 include(":app")
  

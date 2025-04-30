@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Quran Al Lateef</string>
+    <string name="default_web_client_id">1017196374167-5237mcsarbiabc9jhd744h60ab0sief8.apps.googleusercontent.com</string>
+
 </resources>
