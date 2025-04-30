@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1017196374167",
+    "project_id": "al-qur-an-al-latheef-652d4",
+    "storage_bucket": "al-qur-an-al-latheef-652d4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017196374167:android:4085a131aa1ec1161a61d2",
+        "android_client_info": {
+          "package_name": "alquran.latheef.jelita"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1017196374167-5237mcsarbiabc9jhd744h60ab0sief8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATd2lGWxjAWTjyLWm98DWtsGk9_VMmsiU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1017196374167-5237mcsarbiabc9jhd744h60ab0sief8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
