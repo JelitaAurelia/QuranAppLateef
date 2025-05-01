@@ -127,7 +127,6 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top Bar with Back Button and Title
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,7 +151,6 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                 Spacer(modifier = Modifier.width(48.dp)) // Balance the layout
             }
 
-            // Profile Picture Section
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -177,9 +175,9 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                 }
             }
 
-            Spacer(modifier = Modifier.height(76.dp)) // Increased spacing to push content down
+            Spacer(modifier = Modifier.height(76.dp))
 
-            // Display Fields
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
