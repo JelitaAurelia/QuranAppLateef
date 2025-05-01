@@ -183,7 +183,6 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                // Card untuk Username
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -203,7 +202,6 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                     }
                 }
 
-                // Card untuk Email Id
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
