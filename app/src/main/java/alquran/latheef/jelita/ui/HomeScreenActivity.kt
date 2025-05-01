@@ -25,7 +25,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import alquran.latheef.jelita.R
-import alquran.latheef.jelita.utiils.AccountHistoryManager
 import com.google.firebase.auth.FirebaseUser
 import alquran.latheef.jelita.utiils.FirebaseUtils
 import androidx.compose.animation.AnimatedVisibility
@@ -117,7 +116,6 @@ fun TopBar(user: FirebaseUser?, onProfileClick: () -> Unit) {
 @Composable
 fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Unit) {
     val context = LocalContext.current
-    val accountHistory = remember { AccountHistoryManager.getAccountHistory(context) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),

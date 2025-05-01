@@ -25,7 +25,6 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import alquran.latheef.jelita.R
 import alquran.latheef.jelita.navigation.HomeScreenActivity
-import alquran.latheef.jelita.utiils.AccountHistoryManager
 import alquran.latheef.jelita.utiils.FirebaseUtils
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
@@ -46,14 +45,13 @@ class SplashScreenActivity : ComponentActivity() {
             FirebaseUtils.auth.signInWithCredential(credential).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     FirebaseUtils.getCurrentUser()?.let {
-                        AccountHistoryManager.saveAccount(this, it)
+
                     }
                     startActivity(Intent(this, HomeScreenActivity::class.java))
                     finish()
                 }
             }
         } catch (e: ApiException) {
-            // Handle error if needed
         }
     }
 
