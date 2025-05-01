@@ -158,7 +158,7 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(231.dp) // Increased height to stretch background downwards
+                    .height(191.dp) // Increased height to stretch background downwards
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.profilebg),
@@ -171,7 +171,7 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                         model = photoUrl,
                         contentDescription = "User Profile",
                         modifier = Modifier
-                            .size(165.dp)
+                            .size(135.dp)
                             .clip(CircleShape)
                             .align(Alignment.Center),
                         contentScale = ContentScale.Crop
@@ -191,18 +191,18 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 5.dp),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(13.dp)
                     ) {
-                        Text("Nama Pengguna", color = Color.Gray, fontSize = 17.sp)
+                        Text("Nama Pengguna", color = Color.Gray, fontSize = 13.sp)
                         Text(
                             text = user?.displayName ?: "Pengguna Tidak Dikenal",
                             color = Color.White,
-                            fontSize = 19.sp,
-                            modifier = Modifier.padding(vertical = 13.dp)
+                            fontSize = 15.sp,
+                            modifier = Modifier.padding(vertical = 9.dp)
                         )
                     }
                 }
@@ -211,18 +211,18 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 5.dp),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(13.dp)
                     ) {
-                        Text("ID Email", color = Color.Gray, fontSize = 17.sp)
+                        Text("ID Email", color = Color.Gray, fontSize = 13.sp)
                         Text(
                             text = user?.email ?: "Tidak ada email",
                             color = Color.White,
-                            fontSize = 19.sp,
-                            modifier = Modifier.padding(vertical = 13.dp)
+                            fontSize = 15.sp,
+                            modifier = Modifier.padding(vertical = 9.dp)
                         )
                     }
                 }
@@ -237,7 +237,7 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
+                    .height(37.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF5B7065),
                     contentColor = Color.White
