@@ -27,6 +27,12 @@ import alquran.latheef.jelita.R
 import alquran.latheef.jelita.navigation.HomeScreenActivity
 import alquran.latheef.jelita.utiils.AccountHistoryManager
 import alquran.latheef.jelita.utiils.FirebaseUtils
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 
 class SplashScreenActivity : ComponentActivity() {
 
@@ -130,8 +136,46 @@ fun SplashScreen(onGoogleSignInClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = onGoogleSignInClick) {
-                Text(text = "Login with Google")
+            val interactionSource = remember { MutableInteractionSource() }
+            val isPressed by interactionSource.collectIsPressedAsState()
+            val buttonScale by animateFloatAsState(if (isPressed) 0.95f else 1f)
+
+            Box(
+                modifier = Modifier
+                    .scale(buttonScale)
+                    .shadow(8.dp, RoundedCornerShape(12.dp))
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFFDDBC95), Color(0xFFCDCDC0)),
+                            start = androidx.compose.ui.geometry.Offset(0f, 0f),
+                            end = androidx.compose.ui.geometry.Offset(300f, 0f)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { onGoogleSignInClick() }
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.goggle),
+                        contentDescription = "Google Icon",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Log in with Google",
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontSize = 16.sp
+                        )
+                    )
+                }
             }
         }
 

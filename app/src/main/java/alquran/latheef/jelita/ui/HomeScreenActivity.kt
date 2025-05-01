@@ -112,6 +112,7 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
+            shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
         ) {
             Column(
@@ -183,6 +184,9 @@ fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Un
                         onDismiss()
                     },
                     modifier = Modifier.fillMaxWidth()
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5B7065), contentColor = Color.White)
                 ) {
                     Text("Logout")
                 }
@@ -263,7 +267,9 @@ fun BottomNavigationBar(navController: NavController) {
                     selectedTextColor = Color(0xFF2D3033),
                     unselectedTextColor = Color(0xFFB0BEC5)
                 )
+
             )
         }
     }
 }
+
