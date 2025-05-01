@@ -28,6 +28,13 @@ import alquran.latheef.jelita.R
 import alquran.latheef.jelita.utiils.AccountHistoryManager
 import com.google.firebase.auth.FirebaseUser
 import alquran.latheef.jelita.utiils.FirebaseUtils
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -56,7 +63,11 @@ fun HomeScreen(navController: NavController) {
         }
     }
 
-    if (showProfileDialog) {
+    AnimatedVisibility(
+        visible = showProfileDialog,
+        enter = slideInHorizontally(initialOffsetX = { it }),
+        exit = slideOutHorizontally(targetOffsetX = { it })
+    ) {
         ProfileDialog(
             user = currentUser,
             onDismiss = { showProfileDialog = false },
@@ -107,94 +118,136 @@ fun TopBar(user: FirebaseUser?, onProfileClick: () -> Unit) {
 fun ProfileDialog(user: FirebaseUser?, onDismiss: () -> Unit, onLogout: () -> Unit) {
     val context = LocalContext.current
     val accountHistory = remember { AccountHistoryManager.getAccountHistory(context) }
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Color(0xFF1E1E1E)
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(16.dp),
-            shape = MaterialTheme.shapes.large,
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            // Top Bar with Back Button and Title
+            Row(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(onClick = onDismiss) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White
+                    )
+                }
+                Text(
+                    text = "Profile",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.width(48.dp)) // Balance the layout
+            }
+
+            // Profile Picture Section
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(231.dp) // Increased height to stretch background downwards
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.profilebg),
+                    contentDescription = "Profile Background",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
                 user?.photoUrl?.let { photoUrl ->
                     AsyncImage(
                         model = photoUrl,
                         contentDescription = "User Profile",
                         modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape),
+                            .size(165.dp)
+                            .clip(CircleShape)
+                            .align(Alignment.Center),
                         contentScale = ContentScale.Crop
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = user?.displayName ?: "Unknown User",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = user?.email ?: "No email",
-                    color = Color.Gray,
-                    fontSize = 16.sp
-                )
+            }
 
-                if (accountHistory.isNotEmpty()) {
-                    Text(
-                        "Riwayat Akun",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
+            Spacer(modifier = Modifier.height(76.dp)) // Increased spacing to push content down
 
-                    accountHistory.forEach {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                        ) {
-                            AsyncImage(
-                                model = it["photoUrl"],
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text(text = it["name"] ?: "", color = Color.White, fontSize = 14.sp)
-                                Text(text = it["email"] ?: "", color = Color.Gray, fontSize = 12.sp)
-                            }
-                        }
+            // Display Fields
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                // Card untuk Username
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text("Nama Pengguna", color = Color.Gray, fontSize = 17.sp)
+                        Text(
+                            text = user?.displayName ?: "Pengguna Tidak Dikenal",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            modifier = Modifier.padding(vertical = 13.dp)
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = {
-                        onLogout()
-                        onDismiss()
-                    },
-                    modifier = Modifier.fillMaxWidth()
+                // Card untuk Email Id
+                Card(
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5B7065), contentColor = Color.White)
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
                 ) {
-                    Text("Logout")
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text("ID Email", color = Color.Gray, fontSize = 17.sp)
+                        Text(
+                            text = user?.email ?: "Tidak ada email",
+                            color = Color.White,
+                            fontSize = 19.sp,
+                            modifier = Modifier.padding(vertical = 13.dp)
+                        )
+                    }
                 }
+            }
+            Spacer(modifier = Modifier.height(71.dp))
+
+            // Logout Button
+            Button(
+                onClick = {
+                    onLogout()
+                    onDismiss()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF5B7065),
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Logout")
             }
         }
     }
 }
-
 
 @Composable
 fun TabSection(navController: NavController) {
